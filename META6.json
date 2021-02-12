@@ -1,8 +1,9 @@
 {
   "name": "Intl::Number::Plural",
   "description": "A module to determine the grammatical count of a number",
-  "version": "0.1.0",
+  "version": "0.5.2",
   "perl": "6.*",
+  "raku": "6.*",
   "authors": [
     "Matthew Stephen Stuckwisch"
   ],

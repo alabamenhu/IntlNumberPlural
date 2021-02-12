@@ -26,6 +26,20 @@ multi sub plural-count(
     return 'other';
 }
 
+multi sub plural-count(
+    Numeric  $from,
+    Numeric  $to,
+            :$language = user-language, #= The language used in determining the count
+) is export {
+
+    # Figure out the count of the extremes
+    my $start = plural-count $from, :$language, :type<cardinal>;
+    my $end   = plural-count $to,   :$language, :type<cardinal>;
+
+    # The relationships are precalculated as a table in CLDR
+    cldr{$language}.plurals.ranges.from($start).to($end);
+}
+
 class NumExt {
     has $.original;
     has $.n; #= absolute value

@@ -22,14 +22,19 @@ There are six strings that can be returned by the function: **zero**, **one**, *
 Note that (as evidenced by the above table), the labels don't always correspond to what one might intuitively think.
 Consequently, this is a module generally oriented towards makes of localization frameworks, and less so towards end-users.
 
-The `plural-count` sub currently takes three arguments:
+The `plural-count` sub currently takes one or two positional arguments:
 
   * **`number`** (required)  
-  The number whose count is to be determined
+  The number whose count is to be determined.
+  * **`from`, `to`**  
+  The count is calculated for a range (`from .. to`).
+  
+There are two optional named parameters
+
   * **`:language`**  
   The language to be used in determining the count.  Defaults to `user-language`.
   * **`:type`**  
-  Acceptable values are **cardinal** and **ordinal**, defaults to *cardinal*.  Some languages behave differently for these two types of numbers.
+  Acceptable values are **cardinal** and **ordinal**, defaults to *cardinal*.  Some languages behave differently for these two types of numbers.  Ignored for range calculations which always use *cardinal*
   
 ## Dependencies
 
@@ -44,7 +49,8 @@ The `plural-count` sub currently takes three arguments:
   * Add tests for major languages
 
 ## Version History
-  
+  * **v0.5.2**
+    * Added support for ranged 
   * **v0.5.1**  
     * Initial release as separate module
   * **v0.1** – **v0.5**  
