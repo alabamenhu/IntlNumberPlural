@@ -19,7 +19,6 @@ multi sub plural-count(
 
     for <zero one two few many zero> -> $count {
         my $matcher = get-matcher($language, $count, $type);
-
         return $count if $matcher.check: $n;
     }
 
@@ -37,9 +36,13 @@ multi sub plural-count(
     my $end   = plural-count $to,   :$language, :type<cardinal>;
 
     # The relationships are precalculated as a table in CLDR
-    cldr{$language}.plurals.ranges.from($start).to($end);
+    cldr{$language}.grammar.plurals.ranges.from($start).to($end);
 }
 
+# This is currently a quick way (stolen from the old Intl::CLDR methods)
+# to provide access to certain qualities of a number without recalculating.
+# When RakuAST is completed, all plural rules can be merged into a single
+# callable that can also handle non-Latin digits nicely.
 class NumExt {
     has $.original;
     has $.n; #= absolute value
@@ -50,16 +53,16 @@ class NumExt {
     has $.t; #= visible fractional digits without trailing zeros
     proto method new(|c) { * }
     multi method new(Numeric $original) { samewith $original.Str }
-    multi method new(Str     $original) {
+    multi method new(Str     $original, :language) {
         $original ~~ /^
-        ('-'?)         # negative marker [0]
-        ('0'*)         # leading zeros [1]
-        (<[0..9]>+)    # one or more integer values [2]
-        [
-        '.'          #   decimal pointer
-        (<[0..9]>*?) #   any number of decimals [3]
-        ('0'*)       #   with trailing zeros [4]
-        ]?             # decimal group is optional
+            ('-'?)         # negative marker [0]
+            ('0'*)         # leading zeros [1]
+            (<[0..9]>+)    # one or more integer values [2]
+            [
+              '.'          #   decimal pointer
+              (<[0..9]>*?) #   any number of decimals [3]
+              ('0'*)       #   with trailing zeros [4]
+            ]?             # decimal group is optional
         $/;
         return False unless $/; # equivalent of death
         my $n = $original.abs;
@@ -84,22 +87,14 @@ sub get-matcher($lang, $count, $type) {
     state %cache;
     .return with %cache{"$type $count $lang"};
 
-    my $cldr-form = cldr{$lang}.plurals{$type}{$count};
+    my $cldr-form = cldr{$lang}.grammar.plurals{$type}{$count};
 
-    # Blank string is always False (because the language doesn't define it)
-    %cache{"$type $count $lang"} =
-        $cldr-form ne ''
-            ?? PluralMatcher.parse($cldr-form, :actions(PluralAction)).made
-            !! Logic::AlwaysFalse.new;
+    %cache{"$type $count $lang"}
+        = PluralMatcher.parse($cldr-form, :actions(PluralAction)).made
 }
 
-# This is currently a quick way (stolen from the old Intl::CLDR methods)
-# to provide access to certain qualities of a number without recalculating.
-# When RakuAST is developed, all plural rules can be merged into a single
-# callable that can also handle non-Latin digits nicely.
 
-
-grammar PluralMatcher is export {
+grammar PluralMatcher {
     # Rules found at http://unicode.org/reports/tr35/tr35-numbers.html#Language_Plural_Rules
     rule  TOP        { #`[<count> ':'] <or>? #`<samples> }
     rule  or         { <and>+ % 'or'  }
@@ -196,7 +191,7 @@ class Logic::RangeValue {
     method in-range($x) { $x ∈ $!value}
 }
 
-class PluralAction is export {
+class PluralAction {
 
     # Pass through the OR condition.
     method TOP ($/) {
