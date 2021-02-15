@@ -49,6 +49,8 @@ There are two optional named parameters
   * Add tests for major languages
 
 ## Version History
+  * **v0.5.3**
+    * Updated CLDR reference (was `.plurals` in beta, now is `.grammar.plurals`)
   * **v0.5.2**
     * Added support for ranged 
   * **v0.5.1**  

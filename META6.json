@@ -1,14 +1,17 @@
 {
   "name": "Intl::Number::Plural",
   "description": "A module to determine the grammatical count of a number",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "perl": "6.*",
   "raku": "6.*",
   "authors": [
     "Matthew Stephen Stuckwisch"
   ],
   "auth": "git:alabamenhu",
-  "depends": ["Intl::CLDR:ver<0.5.1+>", "Intl::UserLanguage"],
+  "depends": [
+    "Intl::CLDR:ver<0.5.1+>",
+    "Intl::UserLanguage"
+  ],
   "build-depends": [],
   "test-depends": ["Test"],
   "provides": {
