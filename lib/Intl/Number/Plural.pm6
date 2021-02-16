@@ -53,7 +53,7 @@ class NumExt {
     has $.t; #= visible fractional digits without trailing zeros
     proto method new(|c) { * }
     multi method new(Numeric $original) { samewith $original.Str }
-    multi method new(Str     $original, :language) {
+    multi method new(Str     $original, :$language) {
         $original ~~ /^
             ('-'?)         # negative marker [0]
             ('0'*)         # leading zeros [1]
