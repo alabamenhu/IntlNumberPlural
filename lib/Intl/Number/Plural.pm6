@@ -161,7 +161,7 @@ class Logic::Expression {
     has $.mod = Nil;
     method evaluate($x) {
         if $!mod {
-            return $!operand.value($x) mod $.mod;
+            return $!operand.value($x) % $!mod;
         } else {
             return $!operand.value($x)
         }
